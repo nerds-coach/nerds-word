@@ -127,6 +127,7 @@ jobs:
         run: |
           cp -R nerds/app-icon/. assets/app-icon/
           cp nerds/.github/publish-ci-output.sh "$RUNNER_TEMP/"
+          cp nerds/.github/official-models.py "$RUNNER_TEMP/"
           rm -rf nerds
       - uses: storytold/craft-common-actions/actions/checkout-craft-fonts@main
         with:
@@ -156,6 +157,25 @@ jobs:
           { echo "VERSION=$VERSION"; echo "BUILD_DATE=$date"; echo "BUILD_SHA=$SHA"
             echo "${up}_VERSION=$VERSION"; echo "${up}_BUILD_DATE=$date"; echo "${up}_BUILD_SHA=$SHA"
             echo "CRAFT_FONTS_DIR=$GITHUB_WORKSPACE/craft-fonts"; echo "CRAFT_FONTS_REQUIRED=1"; } >>"$GITHUB_ENV"
+      - name: Model files from the official release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          UPSTREAM: ${{ needs.plan.outputs.upstream }}
+          TAG: ${{ needs.plan.outputs.tag }}
+          VERSION: ${{ needs.plan.outputs.version }}
+          APP: ${{ needs.plan.outputs.app }}
+        run: |
+          # Apps that download model files while packaging (PdfCraft's OCR models) take them from
+          # their official release instead, as the model host may refuse a download.
+          grep -q 'kind = "model"' ATTRIBUTION.toml 2>/dev/null || exit 0
+          dir="$RUNNER_TEMP/official"; mkdir -p "$dir"
+          gh release download "$TAG" -R "$UPSTREAM" -p "$APP-$VERSION-windows-x64-portable.zip" -D "$dir"
+          unzip -q "$dir"/*.zip -d "$dir/x"
+          models=$(find "$dir/x" -type d -name models | head -1)
+          [ -n "$models" ] || { echo "::warning::no models folder in the official package"; exit 0; }
+          py=$(command -v python3 || command -v python)
+          "$py" "$RUNNER_TEMP/official-models.py" ATTRIBUTION.toml "$models"
       - name: Build and package
         shell: bash
         run: |
@@ -196,6 +216,7 @@ jobs:
         run: |
           cp -R nerds/app-icon/. assets/app-icon/
           cp nerds/.github/publish-ci-output.sh "$RUNNER_TEMP/"
+          cp nerds/.github/official-models.py "$RUNNER_TEMP/"
           rm -rf nerds
       - uses: storytold/craft-common-actions/actions/checkout-craft-fonts@main
         with:
@@ -219,6 +240,25 @@ jobs:
           { echo "VERSION=$VERSION"; echo "BUILD_DATE=$date"; echo "BUILD_SHA=$SHA"
             echo "${up}_VERSION=$VERSION"; echo "${up}_BUILD_DATE=$date"; echo "${up}_BUILD_SHA=$SHA"
             echo "CRAFT_FONTS_DIR=$GITHUB_WORKSPACE/craft-fonts"; echo "CRAFT_FONTS_REQUIRED=1"; } >>"$GITHUB_ENV"
+      - name: Model files from the official release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          UPSTREAM: ${{ needs.plan.outputs.upstream }}
+          TAG: ${{ needs.plan.outputs.tag }}
+          VERSION: ${{ needs.plan.outputs.version }}
+          APP: ${{ needs.plan.outputs.app }}
+        run: |
+          # Apps that download model files while packaging (PdfCraft's OCR models) take them from
+          # their official release instead, as the model host may refuse a download.
+          grep -q 'kind = "model"' ATTRIBUTION.toml 2>/dev/null || exit 0
+          dir="$RUNNER_TEMP/official"; mkdir -p "$dir"
+          gh release download "$TAG" -R "$UPSTREAM" -p "$APP-$VERSION-windows-x64-portable.zip" -D "$dir"
+          unzip -q "$dir"/*.zip -d "$dir/x"
+          models=$(find "$dir/x" -type d -name models | head -1)
+          [ -n "$models" ] || { echo "::warning::no models folder in the official package"; exit 0; }
+          py=$(command -v python3 || command -v python)
+          "$py" "$RUNNER_TEMP/official-models.py" ATTRIBUTION.toml "$models"
       - name: Build and package
         run: |
           mkdir -p "$RUNNER_TEMP/out"
