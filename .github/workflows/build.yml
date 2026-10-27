@@ -1,0 +1,248 @@
+# Builds the latest official release of this app's upstream Craft app (nerds.json) with the NERDS
+# icon (app-icon/, laid over the app's assets/app-icon/), for Windows and macOS, and publishes it
+# here as a GitHub Release with the same tag and file names, so NERDS Launcher installs it.
+#
+# It runs every six hours and only builds when upstream has published a release this repo doesn't
+# have yet. Actions → Build → Run workflow builds now; "force" rebuilds a version already here.
+name: Build
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: Rebuild even if this version is already published here
+        type: boolean
+        default: false
+      tag:
+        description: Upstream tag to build (empty for its latest release)
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build
+  cancel-in-progress: false
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: 0
+  RUST_BACKTRACE: 1
+
+jobs:
+  plan:
+    name: Plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    outputs:
+      build: ${{ steps.p.outputs.build }}
+      app: ${{ steps.p.outputs.app }}
+      upstream: ${{ steps.p.outputs.upstream }}
+      name: ${{ steps.p.outputs.name }}
+      tag: ${{ steps.p.outputs.tag }}
+      version: ${{ steps.p.outputs.version }}
+      sha: ${{ steps.p.outputs.sha }}
+      prerelease: ${{ steps.p.outputs.prerelease }}
+      fonts: ${{ steps.p.outputs.fonts }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - id: p
+        name: Find the upstream release to build
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FORCE: ${{ inputs.force }}
+          WANT_TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          app=$(jq -r .app nerds.json); upstream=$(jq -r .upstream nerds.json); name=$(jq -r .name nerds.json)
+          { echo "app=$app"; echo "upstream=$upstream"; echo "name=$name"; } >>"$GITHUB_OUTPUT"
+          tag="$WANT_TAG"
+          if [ -z "$tag" ]; then
+            tag=$(gh api "repos/$upstream/releases/latest" -q .tag_name 2>/dev/null || true)
+          fi
+          if [ -z "$tag" ]; then
+            echo "$upstream has no release yet: nothing to build" | tee -a "$GITHUB_STEP_SUMMARY"
+            echo "build=false" >>"$GITHUB_OUTPUT"; exit 0
+          fi
+          if gh api "repos/$GITHUB_REPOSITORY/releases/tags/$tag" >/dev/null 2>&1 && [ "$FORCE" != "true" ]; then
+            echo "$name $tag is already published here" | tee -a "$GITHUB_STEP_SUMMARY"
+            echo "build=false" >>"$GITHUB_OUTPUT"; exit 0
+          fi
+          sha=$(gh api "repos/$upstream/commits/$tag" -q .sha)
+          pre=$(gh api "repos/$upstream/releases/tags/$tag" -q .prerelease 2>/dev/null || echo false)
+          # The craft-fonts commit the app's own release pins, else the shared release workflow's default.
+          wf=$(gh api -H 'Accept: application/vnd.github.raw' "repos/$upstream/contents/.github/workflows/release.yml?ref=$tag" 2>/dev/null || true)
+          fonts=$(printf '%s\n' "$wf" | sed -n 's/^[[:space:]]*craft-fonts-ref:[[:space:]]*"\{0,1\}\([0-9a-f]\{40\}\).*/\1/p' | head -1)
+          if [ -z "$fonts" ]; then
+            shared=$(gh api -H 'Accept: application/vnd.github.raw' "repos/storytold/craft-common-actions/contents/.github/workflows/release.yml")
+            fonts=$(printf '%s\n' "$shared" | awk '/^ *craft-fonts-ref:$/ {f=1} f && /default:/ {gsub(/[" ]/, "", $2); print $2; exit}')
+          fi
+          [[ "$fonts" =~ ^[0-9a-f]{40}$ ]] || { echo "::error::couldn't find the craft-fonts commit ('$fonts')"; exit 1; }
+          { echo "build=true"; echo "tag=$tag"; echo "version=${tag#v}"; echo "sha=$sha"; echo "prerelease=$pre"; echo "fonts=$fonts"; } >>"$GITHUB_OUTPUT"
+          echo "### Building $name ${tag} from $upstream@${sha::9}" >>"$GITHUB_STEP_SUMMARY"
+      # GitHub pauses scheduled workflows after 60 days without a commit; a dated note every few
+      # weeks keeps this one running.
+      - name: Keep the schedule alive
+        if: github.event_name == 'schedule'
+        run: |
+          last=$(git log -1 --format=%ct)
+          if [ $(( $(date +%s) - last )) -gt $(( 40 * 86400 )) ]; then
+            date -u +%Y-%m-%d >.github/last-check
+            git add .github/last-check
+            git -c user.name="NERDS build" -c user.email="build@users.noreply.github.com" commit -q -m "Keep the build schedule alive"
+            git push -q
+          fi
+
+  windows:
+    name: Windows x64
+    needs: plan
+    if: needs.plan.outputs.build == 'true'
+    runs-on: windows-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ needs.plan.outputs.upstream }}
+          ref: ${{ needs.plan.outputs.sha }}
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: nerds
+          persist-credentials: false
+      - name: NERDS icon
+        shell: bash
+        run: cp -R nerds/app-icon/. assets/app-icon/ && rm -rf nerds
+      - uses: storytold/craft-common-actions/actions/checkout-craft-fonts@main
+        with:
+          ref: ${{ needs.plan.outputs.fonts }}
+      - uses: storytold/craft-common-actions/actions/checkout-craft-i18n@main
+      - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # v1
+        with:
+          toolchain: stable
+          targets: x86_64-pc-windows-msvc
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        with:
+          key: release-windows-x64
+      - name: Install WiX 5
+        shell: pwsh
+        run: |
+          dotnet tool install --global wix --version 5.0.2
+          wix extension add -g WixToolset.UI.wixext/5.0.2 WixToolset.Util.wixext/5.0.2
+      - name: Build environment
+        shell: bash
+        env:
+          APP: ${{ needs.plan.outputs.app }}
+          VERSION: ${{ needs.plan.outputs.version }}
+          SHA: ${{ needs.plan.outputs.sha }}
+        run: |
+          up=$(printf '%s' "$APP" | tr '[:lower:]-' '[:upper:]_')
+          date=$(date -u +%Y-%m-%d)
+          { echo "VERSION=$VERSION"; echo "BUILD_DATE=$date"; echo "BUILD_SHA=$SHA"
+            echo "${up}_VERSION=$VERSION"; echo "${up}_BUILD_DATE=$date"; echo "${up}_BUILD_SHA=$SHA"
+            echo "CRAFT_FONTS_DIR=$GITHUB_WORKSPACE/craft-fonts"; echo "CRAFT_FONTS_REQUIRED=1"; } >>"$GITHUB_ENV"
+      - name: Build and package
+        shell: pwsh
+        run: ./packaging/windows/package.ps1 -Arch x64
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-windows-x64
+          path: dist/release/*
+          if-no-files-found: error
+
+  macos:
+    name: macOS universal
+    needs: plan
+    if: needs.plan.outputs.build == 'true'
+    runs-on: macos-15
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ needs.plan.outputs.upstream }}
+          ref: ${{ needs.plan.outputs.sha }}
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: nerds
+          persist-credentials: false
+      - name: NERDS icon
+        run: cp -R nerds/app-icon/. assets/app-icon/ && rm -rf nerds
+      - uses: storytold/craft-common-actions/actions/checkout-craft-fonts@main
+        with:
+          ref: ${{ needs.plan.outputs.fonts }}
+      - uses: storytold/craft-common-actions/actions/checkout-craft-i18n@main
+      - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # v1
+        with:
+          toolchain: stable
+          targets: aarch64-apple-darwin, x86_64-apple-darwin
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        with:
+          key: release-macos-universal
+      - name: Build environment
+        env:
+          APP: ${{ needs.plan.outputs.app }}
+          VERSION: ${{ needs.plan.outputs.version }}
+          SHA: ${{ needs.plan.outputs.sha }}
+        run: |
+          up=$(printf '%s' "$APP" | tr '[:lower:]-' '[:upper:]_')
+          date=$(date -u +%Y-%m-%d)
+          { echo "VERSION=$VERSION"; echo "BUILD_DATE=$date"; echo "BUILD_SHA=$SHA"
+            echo "${up}_VERSION=$VERSION"; echo "${up}_BUILD_DATE=$date"; echo "${up}_BUILD_SHA=$SHA"
+            echo "CRAFT_FONTS_DIR=$GITHUB_WORKSPACE/craft-fonts"; echo "CRAFT_FONTS_REQUIRED=1"; } >>"$GITHUB_ENV"
+      - name: Build and package
+        run: packaging/macos/package.sh --arch universal
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-macos-universal
+          path: dist/release/*
+          if-no-files-found: error
+
+  publish:
+    name: Publish
+    needs: [plan, windows, macos]
+    if: needs.plan.outputs.build == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: release-*
+          path: artifacts
+          merge-multiple: true
+      - name: Checksums
+        working-directory: artifacts
+        run: sha256sum -- * | tee SHA256SUMS.txt
+      - name: Publish the release
+        working-directory: artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          UPSTREAM: ${{ needs.plan.outputs.upstream }}
+          NAME: ${{ needs.plan.outputs.name }}
+          TAG: ${{ needs.plan.outputs.tag }}
+          VERSION: ${{ needs.plan.outputs.version }}
+          SHA: ${{ needs.plan.outputs.sha }}
+          PRERELEASE: ${{ needs.plan.outputs.prerelease }}
+        run: |
+          set -euo pipefail
+          # The upstream release notes (NERDS Launcher shows them), then where this build came from.
+          gh api "repos/$UPSTREAM/releases/tags/$TAG" -q '.body // ""' >notes.md 2>/dev/null || true
+          printf '\n\n---\n%s %s: the official %s release (%s@%s), built with the NERDS icon.\n' \
+            "$NAME" "$VERSION" "$TAG" "$UPSTREAM" "${SHA::9}" >>notes.md
+          mv notes.md ../notes.md
+          pre=(); [ "$PRERELEASE" = "true" ] && pre=(--prerelease)
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release view "$TAG" --json assets --jq '.assets[].name' | while read -r a; do gh release delete-asset "$TAG" "$a" --yes; done
+            gh release edit "$TAG" --title "$NAME $VERSION" --notes-file ../notes.md
+            gh release upload "$TAG" --clobber -- *
+          else
+            gh release create "$TAG" --target "$GITHUB_SHA" --title "$NAME $VERSION" --notes-file ../notes.md "${pre[@]}" -- *
+          fi
+          echo "Published [$NAME $VERSION](https://github.com/$GH_REPO/releases/tag/$TAG)" >>"$GITHUB_STEP_SUMMARY"
