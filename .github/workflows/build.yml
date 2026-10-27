@@ -291,13 +291,22 @@ jobs:
           PY
           wc -c "$RUNNER_TEMP/notes.md"
           pre=(); [ "$PRERELEASE" = "true" ] && pre=(--prerelease)
+          # A draft first, so nobody sees a release without its files; each file is uploaded with
+          # a few tries (a big upload can drop); then the release is published.
           if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release view "$TAG" --json assets --jq '.assets[].name' | while read -r a; do gh release delete-asset "$TAG" "$a" --yes; done
-            gh release edit "$TAG" --title "$NAME $VERSION" --notes-file "$RUNNER_TEMP/notes.md"
-            gh release upload "$TAG" --clobber -- *
+            gh release edit "$TAG" --draft --title "$NAME $VERSION" --notes-file "$RUNNER_TEMP/notes.md"
           else
-            gh release create "$TAG" --target "$GITHUB_SHA" --title "$NAME $VERSION" --notes-file "$RUNNER_TEMP/notes.md" "${pre[@]}" -- *
+            gh release create "$TAG" --draft --target "$GITHUB_SHA" --title "$NAME $VERSION" --notes-file "$RUNNER_TEMP/notes.md" "${pre[@]}"
           fi
+          for f in *; do
+            for try in 1 2 3 4; do
+              if gh release upload "$TAG" --clobber -- "$f"; then break; fi
+              [ "$try" = 4 ] && { echo "::error::couldn't upload $f"; exit 1; }
+              echo "upload of $f failed (try $try); retrying in $((try * 20))s"; sleep $((try * 20))
+            done
+          done
+          latest=(); [ "$PRERELEASE" != "true" ] && latest=(--latest)
+          gh release edit "$TAG" --draft=false "${latest[@]}"
           echo "Published [$NAME $VERSION](https://github.com/$GH_REPO/releases/tag/$TAG)" >>"$GITHUB_STEP_SUMMARY"
       - name: Publish the log
         if: always()
