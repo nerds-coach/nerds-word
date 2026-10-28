@@ -1,5 +1,6 @@
 {
   "app": "wordcraft",
   "upstream": "storytold/wordcraft",
-  "name": "NERDS Word"
+  "name": "NERDS Word",
+  "upstream_name": "WordCraft"
 }
