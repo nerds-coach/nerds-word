@@ -18,7 +18,7 @@ a string ("PhotoCraft") is only changed where the code shows it (a window title,
 label); everywhere else it may be an identifier and stays.
 
 nerds.json may list `keep` (["path: text in the line", ...]: literals on matching lines stay as
-they are) and `patches` ([{"file", "old", "new"}, ...]: exact replacements, each expected once),
+they are; the path may be `*`, and text starting with `=` must be the whole line) and `patches` ([{"file", "old", "new"}, ...]: exact replacements, each expected once),
 and `brand` ({"docs/brand/x.png": "x.png", ...}: files copied from --brand over the app's own).
 Everything changed is written to the report; problems are reported as warnings and never stop
 the build.
@@ -291,8 +291,11 @@ class Keep:
         self.used = set()
 
     def __call__(self, path, line):
+        """Whether `line` of `path` is to be kept: an entry's path is a file or `*` (any file), and
+        its text is part of the line, or with a leading `=`, the whole line (spaces trimmed)."""
         for i, (p, t) in enumerate(self.entries):
-            if path == p and t in line:
+            hit = line.strip() == t[1:].strip() if t.startswith("=") else t in line
+            if p in (path, "*") and hit:
                 self.used.add(i)
                 return True
         return False
@@ -393,15 +396,50 @@ def rename_plist(text):
     return re.sub(r"(<key>(\w+)</key>)(\s*<string>)([^<]*)(</string>)", one, text)
 
 
-def rename_windows(text):
-    """WiX sources, their localisation and the packaging scripts: readable names (and the Start
-    menu shortcut's file name), the publisher. Registry keys, ids and paths stay."""
+def rename_publisher(text):
     for p in PUBLISHERS:
         text = re.sub(r"([\"'])" + re.escape(p) + r"\1", lambda m: m.group(1) + NERDS_PUBLISHER + m.group(1), text)
+    return text
+
+
+def rename_windows(text):
+    """WiX sources and their localisation: readable names (and the Start menu shortcut's file
+    name), the publisher. Registry keys, ids and paths stay."""
+    text = rename_publisher(text)
     # The name the app is registered under for Default apps is an id its code uses
     # (ms-settings:defaultapps?registeredAppMachine=X), so those lines stay.
     return "\n".join(line if "RegisteredApplications" in line else rename_text(line, (".lnk",))
                      for line in text.split("\n"))
+
+
+PS_STRING = re.compile(r"'(?:[^'\n]|'')*'|\"(?:[^\"`\n]|`.)*\"")
+
+
+def rename_powershell(text):
+    """PowerShell scripts: only text inside quotes, and never a name standing alone in quotes,
+    because a name in code (Add-Type -Namespace PhotoCraft, 'PhotoCraft' as a folder) is an
+    identifier. Messages and the labels the installer tests compare ('Edit with PdfCraft') change
+    as they do in the installer."""
+    text = rename_publisher(text)
+
+    def one(m):
+        q = m.group(0)
+        body = q[1:-1]
+        if body in NAMES or "RegisteredApplications" in body:
+            return q
+        return q[0] + rename_text(body, (".lnk",)) + q[-1]
+    return "\n".join(line if line.lstrip().startswith("#") else PS_STRING.sub(one, line) for line in text.split("\n"))
+
+
+def rename_install_policy(text):
+    """install-policy.json: the registry rows the policy check expects, changed as the installer's
+    are (FriendlyAppName "PhotoCraft" -> "NERDS Photo"). Its `name` stays: it is the registry key
+    and folder name the installer keeps."""
+    policy = json.loads(text)
+    for row in policy.get("registry", []):
+        if len(row) >= 4 and "RegisteredApplications" not in row[1]:
+            row[2], row[3] = rename_text(row[2], (".lnk",)), rename_text(row[3], (".lnk",))
+    return json.dumps(policy, indent=2, ensure_ascii=False) + "\n"
 
 
 def rename_macos_script(text):
@@ -496,8 +534,12 @@ def main(argv):
 
     # Packaging: Windows installer, Mac bundle and disk image.
     for rel in git_files(root, "packaging/windows/*"):
-        if rel.endswith((".wxs", ".wxl", ".ps1", ".txt", ".rtf")) and not rel.endswith("sign.ps1"):
+        if rel.endswith((".wxs", ".wxl", ".txt", ".rtf")):
             edit(root, rel, rename_windows, "win")
+        elif rel.endswith(".ps1") and not rel.endswith("sign.ps1"):
+            edit(root, rel, rename_powershell, "win")
+        elif rel.endswith("install-policy.json"):
+            edit(root, rel, rename_install_policy, "win")
     for rel in git_files(root, "packaging/macos/*.plist.in", "packaging/macos/Info.plist"):
         edit(root, rel, rename_plist, "mac")
     for rel in git_files(root, "packaging/macos/package.sh", "packaging/macos/dmg/generate.py"):
