@@ -356,6 +356,42 @@ def rename_rust(path, src, keep, catalog):
     return "".join(out)
 
 
+# The apps' shared updater (craft-update, a git dependency) knows each app by a constant
+# (craft_update::suite::PHOTOCRAFT) holding its name and upstream repository. Each use becomes
+# that constant with the NERDS name and repository, so an app looks for its updates here and
+# names itself NERDS Photo in the update prompt.
+SUITE_CONSTS = {name.upper(): name for name in NAMES}
+NERDS_REPOS = {
+    "PhotoCraft": "photo", "VectorCraft": "vector", "FilmCraft": "film", "LightCraft": "light",
+    "PdfCraft": "pdf", "EffectCraft": "effects", "DesignCraft": "layout", "FigCraft": "proto",
+    "WordCraft": "word", "SoundCraft": "sound", "DeckCraft": "deck", "CADCraft": "cad", "GridCraft": "grid",
+}
+OWNER = []
+
+
+def nerds_app(const):
+    upstream = SUITE_CONSTS[const]
+    return (f'craft_update::App {{ name: "{NAMES[upstream]}", repo: "{OWNER[0]}/nerds-{NERDS_REPOS[upstream]}", '
+            f'..craft_update::suite::{const} }}')
+
+
+def rename_updater_app(path, src):
+    if not OWNER or "craft_update" not in src:
+        return src
+
+    def use_line(m):
+        report.append(f"rust  {path}: craft_update::suite::{m.group(2)} -> the NERDS repository")
+        return f"{m.group(1)}#[allow(dead_code)]\n{m.group(1)}const {m.group(2)}: craft_update::App = {nerds_app(m.group(2))};"
+
+    consts = "|".join(SUITE_CONSTS)
+    src = re.sub(rf"^([ \t]*)use craft_update::suite::({consts});", use_line, src, flags=re.M)
+
+    def path_use(m):
+        report.append(f"rust  {path}: craft_update::suite::{m.group(1)} -> the NERDS repository")
+        return nerds_app(m.group(1))
+    return re.sub(rf"(?<!\.\.)craft_update::suite::({consts})\b", path_use, src)
+
+
 # ---- translation catalogs -------------------------------------------------------------------
 
 QUOTED = re.compile(r'"((?:[^"\\\n]|\\.)*)"')
@@ -501,10 +537,12 @@ def main(argv):
     keep = Keep(cfg.get("keep", []))
     repo = opts.get("repo") or os.environ.get("GITHUB_REPOSITORY", "")
     upstream = cfg.get("upstream", "storytold/" + cfg["app"])
+    if repo and "/" in repo:
+        OWNER.append(repo.split("/")[0])
     if repo and repo != upstream:
         URLS.extend([(f"github.com/repos/{upstream}/releases", f"github.com/repos/{repo}/releases"),
                      (f"github.com/{upstream}/releases", f"github.com/{repo}/releases")])
-    has_name = re.compile("|".join(map(re.escape, list(NAMES) + list(PUBLISHERS) + ["ArtCraft"] + [u for u, _ in URLS])))
+    has_name = re.compile("|".join(map(re.escape, list(NAMES) + list(PUBLISHERS) + ["ArtCraft", "craft_update::suite"] + [u for u, _ in URLS])))
 
     def mentions(rel):
         try:
@@ -518,7 +556,7 @@ def main(argv):
         if is_test_file(rel) or not mentions(rel):
             continue
         catalog = bool(re.search(r"/i18n(/|\.rs$)|/locales?/", rel))
-        edit(root, rel, lambda s, rel=rel, c=catalog: rename_rust(rel, s, keep, c), "")
+        edit(root, rel, lambda s, rel=rel, c=catalog: rename_updater_app(rel, rename_rust(rel, s, keep, c)), "")
 
     # Translation catalogs: the app's own and craft-i18n's.
     for rel in git_files(root, "*.tsv"):
