@@ -89,6 +89,8 @@ def occurrence_ok(t, s, e, suffixes=()):
         return False
     if a == "\\" and a2 in 'nrt0"\'':
         return True  # before an escape such as \n
+    if a == "&" and re.match(r"&(quot|amp|apos|lt|gt|#\d+|#x[0-9a-fA-F]+);", t[e:]):
+        return True  # before an XML entity: "Edit with PdfCraft&quot;"
     if a in "/\\=<%@#$&":
         return False
     if a == ":" and a2 and not a2.isspace():
