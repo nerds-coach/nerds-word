@@ -1,0 +1,58 @@
+NERDS Word 0.13.2 for Windows x64 (x86_64-pc-windows-msvc)
+==> cargo build (x86_64-pc-windows-msvc)
+[1m[92m    Updating[0m crates.io index
+[1m[92m    Updating[0m git repository `https://github.com/storytold/craft-libs`
+[1m[93mwarning[0m: patch `egui_demo_lib v0.37.0 (https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc7)` was not used in the crate graph
+[1m[93mwarning[0m: patch `egui_extras v0.37.0 (https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc7)` was not used in the crate graph
+[1m[93mwarning[0m: patch `egui_inspection v0.37.0 (https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc7)` was not used in the crate graph
+[1m[93mwarning[0m: patch `egui_system_font_provider v0.37.0 (https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc7)` was not used in the crate graph
+[1m[96mhelp[0m: Check that the patched package version and available features are compatible
+      with the dependency requirements. If the patch has a different version from
+      what is locked in the Cargo.lock file, run `cargo update` to use the new
+      version. This may also occur with an optional dependency that is not enabled.
+[1m[92m Downloading[0m crates ...
+[1m[92m  Downloaded[0m clipboard-win v5.4.3
+[1m[92m  Downloaded[0m ctutils v0.4.7
+[1m[92m   Compiling[0m wordcraft-geom v0.13.2 (D:\a\nerds-word\nerds-word\crates\geom)
+[1m[92m   Compiling[0m ctutils v0.4.7
+[1m[92m   Compiling[0m wordcraft-fonts v0.13.2 (D:\a\nerds-word\nerds-word\crates\fonts)
+[1m[92m   Compiling[0m wordcraft-metafile v0.13.2 (D:\a\nerds-word\nerds-word\crates\metafile)
+[1m[92m   Compiling[0m digest v0.11.3
+[1m[92m   Compiling[0m wordcraft-doc v0.13.2 (D:\a\nerds-word\nerds-word\crates\doc)
+[1m[92m   Compiling[0m wordcraft-proof v0.13.2 (D:\a\nerds-word\nerds-word\crates\proof)
+[1m[92m   Compiling[0m sha1 v0.11.0
+[1m[92m   Compiling[0m sha2 v0.11.1
+[1m[92m   Compiling[0m hmac v0.13.0
+[1m[92m   Compiling[0m clipboard-win v5.4.3
+[1m[92m   Compiling[0m arboard v3.7.0
+[1m[92m   Compiling[0m wordcraft-ui-egui v0.13.2 (D:\a\nerds-word\nerds-word\crates\ui-egui)
+[1m[92m   Compiling[0m wordcraft-control-key v0.13.2 (D:\a\nerds-word\nerds-word\crates\control-key)
+[1m[92m   Compiling[0m craft-update v0.1.0 (https://github.com/storytold/craft-libs?rev=04aa1703b32d299e54f78fcde4182f2b393a9116#04aa1703)
+[1m[92m   Compiling[0m wordcraft-layout v0.13.2 (D:\a\nerds-word\nerds-word\crates\layout)
+[1m[92m   Compiling[0m wordcraft-docbin v0.13.2 (D:\a\nerds-word\nerds-word\crates\docbin)
+[1m[92m   Compiling[0m wordcraft-pdf v0.13.2 (D:\a\nerds-word\nerds-word\crates\pdf)
+[1m[92m   Compiling[0m wordcraft-render v0.13.2 (D:\a\nerds-word\nerds-word\crates\render)
+[1m[92m   Compiling[0m wordcraft-formats v0.13.2 (D:\a\nerds-word\nerds-word\crates\formats)
+[1m[92m   Compiling[0m wordcraft-docx v0.13.2 (D:\a\nerds-word\nerds-word\crates\docx)
+[1m[92m   Compiling[0m wordcraft v0.13.2 (D:\a\nerds-word\nerds-word\apps\wordcraft)
+[1m[92m   Compiling[0m egui-winit v0.37.0 (https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc7)
+[1m[92m   Compiling[0m eframe v0.37.0 (https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc7)
+[1m[92m   Compiling[0m wordcraft-engine v0.13.2 (D:\a\nerds-word\nerds-word\crates\engine)
+[1m[92m   Compiling[0m wordcraft-zotero v0.13.2 (D:\a\nerds-word\nerds-word\crates\zotero)
+[1m[92m   Compiling[0m wordcraft-mcp v0.13.2 (D:\a\nerds-word\nerds-word\crates\mcp)
+[1m[92m   Compiling[0m wordcraft-cli v0.13.2 (D:\a\nerds-word\nerds-word\apps\wordcraft-cli)
+[1m[92m    Finished[0m `release` profile [optimized] target(s) in 14m 14s
+ok wordcraft.exe: x64, PE subsystem 2
+ok wordcraft-cli.exe: x64, PE subsystem 3
+::warning::Windows signing secrets not set (WINDOWS_CERTIFICATE or AZURE_*): leaving unsigned: D:\a\nerds-word\nerds-word\target\windows-package\x64\wordcraft.exe, D:\a\nerds-word\nerds-word\target\windows-package\x64\wordcraft-cli.exe
+==> wix build
+PASS WordCraft: 24 scope cases, folder preservation, action sequencing and registry contract. No installation performed.
+::warning::Windows signing secrets not set (WINDOWS_CERTIFICATE or AZURE_*): leaving unsigned: D:\a\nerds-word\nerds-word\dist\release\wordcraft-0.13.2-windows-x64.msi
+==> wordcraft-cli --version
+wordcraft-cli 0.13.2
+
+[32;1mName                                     [0m[32;1m    Length[0m
+[32;1m----                                     [0m [32;1m   ------[0m
+wordcraft-0.13.2-windows-x64.msi           88846336
+wordcraft-0.13.2-windows-x64-portable.zip 109332774
+
