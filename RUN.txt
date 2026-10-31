@@ -1,0 +1,3 @@
+run: https://github.com/nerds-coach/nerds-word/actions/runs/41173544501
+commit: 1498daa24be5eb225623bc4d95e70cd8d41f4453
+job: publish
