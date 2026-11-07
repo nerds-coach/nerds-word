@@ -1,0 +1,167 @@
+NERDS Word 0.16.0 for Windows x64 (x86_64-pc-windows-msvc)
+==> cargo build (x86_64-pc-windows-msvc)
+[1m[92m    Updating[0m crates.io index
+[1m[92m    Updating[0m git repository `https://github.com/storytold/craft-libs`
+[1m[93mwarning[0m: patch `egui_demo_lib v0.37.0 (https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc7)` was not used in the crate graph
+[1m[93mwarning[0m: patch `egui_inspection v0.37.0 (https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc7)` was not used in the crate graph
+[1m[93mwarning[0m: patch `egui_system_font_provider v0.37.0 (https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc7)` was not used in the crate graph
+[1m[96mhelp[0m: Check that the patched package version and available features are compatible
+      with the dependency requirements. If the patch has a different version from
+      what is locked in the Cargo.lock file, run `cargo update` to use the new
+      version. This may also occur with an optional dependency that is not enabled.
+[1m[92m   Compiling[0m zerovec-derive v0.11.7
+[1m[92m   Compiling[0m serde_json v1.0.154
+[1m[92m   Compiling[0m yoke v0.8.4
+[1m[92m   Compiling[0m libc v0.2.191
+[1m[92m   Compiling[0m windows-sys v0.61.2
+[1m[92m   Compiling[0m zerovec v0.11.9
+[1m[92m   Compiling[0m socket2 v0.6.5
+[1m[92m   Compiling[0m mio v1.2.4
+[1m[92m   Compiling[0m tinystr v0.8.4
+[1m[92m   Compiling[0m icu_locale_core v2.3.0
+[1m[92m   Compiling[0m zerotrie v0.2.5
+[1m[92m   Compiling[0m tokio v1.53.2
+[1m[92m   Compiling[0m icu_provider v2.3.1
+[1m[92m   Compiling[0m potential_utf v0.1.6
+[1m[92m   Compiling[0m base64 v0.23.1
+[1m[92m   Compiling[0m icu_collections v2.3.0
+[1m[92m   Compiling[0m vello_cpu v0.2.0
+[1m[92m   Compiling[0m bytes v1.12.1
+[1m[92m   Compiling[0m ring v0.17.14
+[1m[92m   Compiling[0m tokio-util v0.7.20
+[1m[92m   Compiling[0m icu_normalizer v2.3.0
+[1m[92m   Compiling[0m icu_properties v2.3.0
+[1m[92m   Compiling[0m percent-encoding v2.3.2
+[1m[92m   Compiling[0m ctutils v0.4.7
+[1m[92m   Compiling[0m h2 v0.4.20
+[1m[92m   Compiling[0m idna_adapter v1.2.2
+[1m[92m   Compiling[0m rustls-pki-types v1.15.1
+[1m[92m   Compiling[0m wordcraft-geom v0.16.0 (D:\a\nerds-word\nerds-word\crates\geom)
+[1m[92m   Compiling[0m accesskit v0.25.1
+[1m[92m   Compiling[0m generic-array v0.14.7
+[1m[92m   Compiling[0m getrandom v0.2.17
+[1m[92m   Compiling[0m untrusted v0.9.0
+[1m[92m   Compiling[0m sigstore-types v0.6.6
+[1m[92m   Compiling[0m alloc-stdlib v0.2.4
+[1m[92m   Compiling[0m digest v0.11.3
+[1m[92m   Compiling[0m hyper v1.12.0
+[1m[92m   Compiling[0m wordcraft-doc v0.16.0 (D:\a\nerds-word\nerds-word\crates\doc)
+[1m[92m   Compiling[0m idna v1.1.0
+[1m[92m   Compiling[0m emath v0.37.0 (https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc7)
+[1m[92m   Compiling[0m httparse v1.10.1
+[1m[92m   Compiling[0m rustls v0.23.46
+[1m[92m   Compiling[0m ecolor v0.37.0 (https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc7)
+[1m[92m   Compiling[0m hyper-util v0.1.21
+[1m[92m   Compiling[0m tower v0.5.3
+[1m[92m   Compiling[0m sigstore-crypto v0.6.6
+[1m[92m   Compiling[0m url v2.5.8
+[1m[92m   Compiling[0m rustls-webpki v0.103.16
+[1m[92m   Compiling[0m brotli-decompressor v5.0.3
+[1m[92m   Compiling[0m tokio-rustls v0.26.6
+[1m[92m   Compiling[0m wordcraft-fonts v0.16.0 (D:\a\nerds-word\nerds-word\crates\fonts)
+[1m[92m   Compiling[0m subtle v2.6.1
+[1m[92m   Compiling[0m unicode-properties v0.1.4
+[1m[92m   Compiling[0m epaint_default_fonts v0.37.0 (https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc7)
+[1m[92m   Compiling[0m tower-http v0.6.11
+[1m[92m   Compiling[0m epaint v0.37.0 (https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc7)
+[1m[92m   Compiling[0m craft-proof v0.1.0 (https://github.com/storytold/craft-libs?rev=01315d9c92b5b0e69082d35ca56099461a1efd45#01315d9c)
+[1m[92m   Compiling[0m hyper-rustls v0.27.10
+[1m[92m   Compiling[0m wuff v0.2.9
+[1m[92m   Compiling[0m crypto-common v0.1.7
+[1m[92m   Compiling[0m block-buffer v0.10.4
+[1m[92m   Compiling[0m rustls-platform-verifier v0.7.1
+[1m[92m   Compiling[0m http v1.5.0
+[1m[92m   Compiling[0m wordcraft-metafile v0.16.0 (D:\a\nerds-word\nerds-word\crates\metafile)
+[1m[92m   Compiling[0m reqwest v0.13.5
+[1m[92m   Compiling[0m ureq-proto v0.6.5
+[1m[92m   Compiling[0m egui v0.37.0 (https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc7)
+[1m[92m   Compiling[0m digest v0.10.7
+[1m[92m   Compiling[0m sha1 v0.11.0
+[1m[92m   Compiling[0m webpki-roots v1.0.11
+[1m[92m   Compiling[0m utf8-zero v0.8.1
+[1m[92m   Compiling[0m cpufeatures v0.2.17
+[1m[92m   Compiling[0m wordcraft-layout v0.16.0 (D:\a\nerds-word\nerds-word\crates\layout)
+[1m[92m   Compiling[0m sha2 v0.10.9
+[1m[92m   Compiling[0m krilla v0.8.2 (https://github.com/storytold/craft-libs?rev=c5a1cbfb5f9049f9270955caffb5bee5997aebf7#c5a1cbfb)
+[1m[92m   Compiling[0m ureq v3.5.0
+[1m[92m   Compiling[0m sigstore-merkle v0.6.6
+[1m[92m   Compiling[0m sha2 v0.11.1
+[1m[92m   Compiling[0m hmac v0.13.0
+[1m[92m   Compiling[0m sigstore-rekor v0.6.6
+[1m[92m   Compiling[0m sigstore-tsa v0.6.6
+[1m[92m   Compiling[0m khronos-egl v6.0.0
+[1m[92m   Compiling[0m craft-pdf v0.1.0 (https://github.com/storytold/craft-libs?rev=c5a1cbfb5f9049f9270955caffb5bee5997aebf7#c5a1cbfb)
+[1m[92m   Compiling[0m winit v0.30.13 (https://github.com/storytold/winit.git?rev=a517b3846ee8457d84ee4975110bfda6797c44dc#a517b384)
+[1m[92m   Compiling[0m craft-font-store v0.1.0 (https://github.com/storytold/craft-libs?rev=762a06a4c6b48b522b7d4de84a87917ef90265e6#762a06a4)
+[1m[92m   Compiling[0m serde_json_canonicalizer v0.3.2
+[1m[92m   Compiling[0m wgpu-hal v30.0.1
+[1m[92m   Compiling[0m wordcraft-formats v0.16.0 (D:\a\nerds-word\nerds-word\crates\formats)
+[1m[92m   Compiling[0m wordcraft-pdf v0.16.0 (D:\a\nerds-word\nerds-word\crates\pdf)
+[1m[92m   Compiling[0m sigstore-bundle v0.6.6
+[1m[92m   Compiling[0m wordcraft-docx v0.16.0 (D:\a\nerds-word\nerds-word\crates\docx)
+[1m[92m   Compiling[0m wordcraft-render v0.16.0 (D:\a\nerds-word\nerds-word\crates\render)
+[1m[92m   Compiling[0m wordcraft-docbin v0.16.0 (D:\a\nerds-word\nerds-word\crates\docbin)
+[1m[92m   Compiling[0m sigstore-trust-root v0.6.6
+[1m[92m   Compiling[0m sigstore-verify v0.6.6
+[1m[92m   Compiling[0m wordcraft-engine v0.16.0 (D:\a\nerds-word\nerds-word\crates\engine)
+[1m[92m   Compiling[0m icu_locale_fallback v2.3.0
+[1m[92m   Compiling[0m wgpu-core-deps-windows-linux-android v30.0.1
+[1m[92m   Compiling[0m accesskit_consumer v0.39.1
+[1m[92m   Compiling[0m form_urlencoded v1.2.2
+[1m[92m   Compiling[0m tempfile v3.27.0
+[1m[92m   Compiling[0m clipboard-win v5.4.3
+[1m[92m   Compiling[0m accesskit_windows v0.35.1
+[1m[92m   Compiling[0m wgpu-core v30.0.1
+[1m[92m   Compiling[0m winprint v0.2.1 (https://github.com/storytold/winprint.rs?rev=5f80b9baf6b58937c401656634e42d33f00ddf49#5f80b9ba)
+[1m[92m   Compiling[0m icu_provider_adapters v2.3.0
+[1m[92m   Compiling[0m icu_plurals v2.3.0
+[1m[92m   Compiling[0m icu_decimal v2.3.0
+[1m[92m   Compiling[0m windows-sys v0.59.0
+[1m[92m   Compiling[0m icu_provider_blob v2.3.0
+[1m[92m   Compiling[0m typed-path v0.13.0
+[1m[92m   Compiling[0m winsafe v0.0.29
+[1m[92m   Compiling[0m zip v9.1.0
+[1m[92m   Compiling[0m craft-i18n v0.1.0 (https://github.com/storytold/craft-libs?rev=92d392cff132eaf53e13afff77f38b5c11b73aa0#92d392cf)
+[1m[92m   Compiling[0m winreg v0.55.0
+[1m[92m   Compiling[0m wgpu v30.0.1
+[1m[92m   Compiling[0m wordcraft-zotero v0.16.0 (D:\a\nerds-word\nerds-word\crates\zotero)
+[1m[92m   Compiling[0m accesskit_winit v0.34.1
+[1m[92m   Compiling[0m webbrowser v1.2.4
+[1m[92m   Compiling[0m arboard v3.7.0
+[1m[92m   Compiling[0m wordcraft-ui-egui v0.16.0 (D:\a\nerds-word\nerds-word\crates\ui-egui)
+[1m[92m   Compiling[0m winresource v0.1.34
+[1m[92m   Compiling[0m verifysign v1.0.1
+[1m[92m   Compiling[0m semver v1.0.28
+[1m[92m   Compiling[0m dunce v1.0.5
+[1m[92m   Compiling[0m wordcraft-control-key v0.16.0 (D:\a\nerds-word\nerds-word\crates\control-key)
+[1m[92m   Compiling[0m craft-fonts-build v0.1.0 (https://github.com/storytold/craft-libs?rev=92d392cff132eaf53e13afff77f38b5c11b73aa0#92d392cf)
+[1m[92m   Compiling[0m craft-update v0.1.0 (https://github.com/storytold/craft-libs?rev=c5a1cbfb5f9049f9270955caffb5bee5997aebf7#c5a1cbfb)
+[1m[92m   Compiling[0m craft-ui v0.1.0 (https://github.com/storytold/craft-libs?rev=92d392cff132eaf53e13afff77f38b5c11b73aa0#92d392cf)
+[1m[92m   Compiling[0m egui-wgpu v0.37.0 (https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc7)
+[1m[92m   Compiling[0m wordcraft v0.16.0 (D:\a\nerds-word\nerds-word\apps\wordcraft)
+[1m[92m   Compiling[0m egui-winit v0.37.0 (https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc7)
+[1m[92m   Compiling[0m egui_extras v0.37.0 (https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc7)
+[1m[92m   Compiling[0m craft-window v0.1.0 (https://github.com/storytold/craft-libs?rev=92d392cff132eaf53e13afff77f38b5c11b73aa0#92d392cf)
+[1m[92m   Compiling[0m craft-winprint-gdi v0.1.0 (https://github.com/storytold/winprint.rs?rev=417ac3c4d14d3da5485a99c7d5ce8f05664ec312#417ac3c4)
+[1m[92m   Compiling[0m roxmltree v0.21.2
+[1m[92m   Compiling[0m eframe v0.37.0 (https://github.com/storytold/egui.git?rev=6d518fc799681571963842f95b55a6b68431b15a#6d518fc7)
+[1m[92m   Compiling[0m craft-print v0.1.0 (https://github.com/storytold/craft-libs?rev=a3e0b5a9440d18f19422a9dca13516747b7d3181#a3e0b5a9)
+[1m[92m   Compiling[0m rfd v0.17.2
+[1m[92m   Compiling[0m wordcraft-mcp v0.16.0 (D:\a\nerds-word\nerds-word\crates\mcp)
+[1m[92m   Compiling[0m open v5.4.5
+[1m[92m   Compiling[0m wordcraft-cli v0.16.0 (D:\a\nerds-word\nerds-word\apps\wordcraft-cli)
+[1m[92m    Finished[0m `release` profile [optimized] target(s) in 11m 27s
+ok wordcraft.exe: x64, PE subsystem 2
+ok wordcraft-cli.exe: x64, PE subsystem 3
+::warning::Windows signing secrets not set (WINDOWS_CERTIFICATE or AZURE_*): leaving unsigned: D:\a\nerds-word\nerds-word\target\windows-package\x64\wordcraft.exe, D:\a\nerds-word\nerds-word\target\windows-package\x64\wordcraft-cli.exe
+==> wix build
+PASS WordCraft: 24 scope cases, folder preservation, action sequencing and registry contract. No installation performed.
+::warning::Windows signing secrets not set (WINDOWS_CERTIFICATE or AZURE_*): leaving unsigned: D:\a\nerds-word\nerds-word\dist\release\wordcraft-0.16.0-windows-x64.msi
+==> wordcraft-cli --version
+wordcraft-cli 0.16.0
+
+[32;1mName                                     [0m[32;1m    Length[0m
+[32;1m----                                     [0m [32;1m   ------[0m
+wordcraft-0.16.0-windows-x64.msi           94584832
+wordcraft-0.16.0-windows-x64-portable.zip 117661649
+
