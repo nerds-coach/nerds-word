@@ -1,0 +1,9 @@
+total 437708
+-rw-r--r-- 1 runner runner       417 Nov 12 07:31 SHA256SUMS.txt
+-rw-r--r-- 1 runner runner 132227944 Nov 12 07:31 wordcraft-0.18.1-macos-universal.dmg
+-rw-r--r-- 1 runner runner 117954456 Nov 12 07:31 wordcraft-0.18.1-windows-x64-portable.zip
+-rw-r--r-- 1 runner runner  95014912 Nov 12 07:31 wordcraft-0.18.1-windows-x64.msi
+-rw-r--r-- 1 runner runner 103005785 Nov 12 07:31 wordcraft-cli-0.18.1-macos-universal.zip
+688 /home/runner/work/_temp/notes.md
+https://github.com/nerds-coach/nerds-word/releases/tag/untagged-4b55e1e9501805c2e2bb
+https://github.com/nerds-coach/nerds-word/releases/tag/v0.18.1
