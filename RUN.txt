@@ -1,0 +1,3 @@
+run: https://github.com/nerds-coach/nerds-word/actions/runs/44347902874
+commit: ffb4c232a471ca286a3c9c5621ccaa30590357f4
+job: macos
