@@ -1,12 +1,12 @@
-<p align="center"><img src="icon.svg" width="128" height="128" alt="NERDS Word icon"></p>
+<p align="center"><img src="icon.svg" width="128" height="128" alt="NERDS Type icon"></p>
 
-<h1 align="center">NERDS Word</h1>
+<h1 align="center">NERDS Type</h1>
 
 <p align="center"><b>Writing and document design.</b> Part of the NerdsCraft Suite: install it with
 <a href="https://github.com/nerds-coach/nerds-launcher/releases/latest">NERDS Launcher</a>.</p>
 
-NERDS Word is [WordCraft](https://github.com/storytold/wordcraft), ArtCraft's free and open-source app, as a NERDS
-edition: the NERDS icon, and NERDS names throughout (NERDS Word in its windows, menus, About box and
+NERDS Type is [WordCraft](https://github.com/storytold/wordcraft), ArtCraft's free and open-source app, as a NERDS
+edition: the NERDS icon, and NERDS names throughout (NERDS Type in its windows, menus, About box and
 installer, NERDS Craft as its publisher). This repository holds no app code: its
 [build workflow](.github/workflows/build.yml) takes each official WordCraft release, makes those changes,
 builds it for Windows and macOS on GitHub, and publishes it under [Releases](../../releases) with the
